@@ -27,7 +27,7 @@ import SwiftUI
 import ControlUI
 
 enum SettingsPane: String, ControlUI.SettingsPane {
-    
+
     case general
     case appearance
     case window
@@ -36,6 +36,7 @@ enum SettingsPane: String, ControlUI.SettingsPane {
     case format
     case snippets
     case keyBindings
+    case terminal
     case donation
     
     
@@ -75,17 +76,21 @@ enum SettingsPane: String, ControlUI.SettingsPane {
                 String(localized: "SettingsPane.keyBindings.label",
                        defaultValue: "Key Bindings",
                        table: "Settings")
+            case .terminal:
+                String(localized: "SettingsPane.terminal.label",
+                       defaultValue: "Terminal",
+                       table: "Settings")
             case .donation:
                 String(localized: "SettingsPane.donation.label",
                        defaultValue: "Donation",
                        table: "Settings")
         }
     }
-    
-    
+
+
     /// The symbol image for tab item.
     var systemSymbolName: String {
-        
+
         switch self {
             case .general: "gearshape"
             case .appearance: "eyeglasses"
@@ -95,14 +100,15 @@ enum SettingsPane: String, ControlUI.SettingsPane {
             case .format: "text.document"
             case .snippets: "text.viewfinder"
             case .keyBindings: "keyboard"
+            case .terminal: "terminal"
             case .donation: "mug"
         }
     }
-    
-    
+
+
     /// The content view.
     @MainActor var view: any View {
-        
+
         switch self {
             case .general: GeneralSettingsView()
             case .appearance: AppearanceSettingsView()
@@ -112,6 +118,7 @@ enum SettingsPane: String, ControlUI.SettingsPane {
             case .format: FormatSettingsView()
             case .snippets: SnippetsSettingsView()
             case .keyBindings: KeyBindingsSettingsView()
+            case .terminal: TerminalSettingsView()
             case .donation: DonationSettingsView()
         }
     }

@@ -187,6 +187,14 @@ struct DefaultSettings {
             .largeFileAlertThreshold: 200 * pow(1024, 2),  // 200 MB
             .savesTextOrientation: true,
             .maximumRecentSyntaxCount: 6,
+
+            // Terminal
+            .terminalShellPath: "/bin/zsh",
+            .terminalFontSize: 13.0,
+            .terminalUseEditorFont: false,
+            .terminalScrollbackLines: 10000,
+            .terminalCursorStyle: 0,  // block
+            .showTerminal: false,
         ]
     }
     

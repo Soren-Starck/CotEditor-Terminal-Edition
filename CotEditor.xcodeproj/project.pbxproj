@@ -25,6 +25,7 @@
 		2ABB27D62C382AD400AFCD0B /* MacUI in Frameworks */ = {isa = PBXBuildFile; productRef = 2ABB27D52C382AD400AFCD0B /* MacUI */; };
 		2ACD02BF22A87F0400893051 /* ColorCode in Frameworks */ = {isa = PBXBuildFile; productRef = 2ACD02BE22A87F0400893051 /* ColorCode */; };
 		2AE863CF2CA2E3BE00D47837 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 2AE863CE2CA2E3BE00D47837 /* Sparkle */; };
+		DCC921172F2CC74C006E3560 /* SwiftTerm in Frameworks */ = {isa = PBXBuildFile; productRef = 2A5E7A012F0700A700000000 /* SwiftTerm */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -136,6 +137,7 @@
 		2A6F0DFD1B5500E100C2D03C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				DCC921172F2CC74C006E3560 /* SwiftTerm in Frameworks */,
 				2ACD02BF22A87F0400893051 /* ColorCode in Frameworks */,
 				2A1380092C22E9B500093BF3 /* EditorCore in Frameworks */,
 				2ABB27D62C382AD400AFCD0B /* MacUI in Frameworks */,
@@ -229,6 +231,7 @@
 				2ABB27D52C382AD400AFCD0B /* MacUI */,
 				2AE863CE2CA2E3BE00D47837 /* Sparkle */,
 				2A644BC82F0665A700E1975F /* Syntax */,
+				2A5E7A012F0700A700000000 /* SwiftTerm */,
 			);
 			productInstallPath = "$(HOME)/Applications";
 			productName = CotEditor;
@@ -330,6 +333,7 @@
 				2AAAE6E326DB82F800C5F0AC /* XCRemoteSwiftPackageReference "Sparkle" */,
 				2AB756AF2C25BBA4005E04C3 /* XCRemoteSwiftPackageReference "SwiftLintPlugins" */,
 				2ABB27CC2C3824DE00AFCD0B /* XCRemoteSwiftPackageReference "swift-numerics" */,
+				2A5E7A002F0700A700000000 /* XCRemoteSwiftPackageReference "SwiftTerm" */,
 			);
 			preferredProjectObjectVersion = 90;
 			productRefGroup = 2A7380232CAD911F00E870E5 /* Products */;
@@ -511,12 +515,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "Accent Color";
 				CURRENT_PROJECT_VERSION = 801;
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = CotEditor/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				MARKETING_VERSION = "7.0.0-alpha";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditor;
 				PRODUCT_NAME = CotEditor;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_CONCISE_MAGIC_FILE = YES;
@@ -539,8 +544,9 @@
 			baseConfigurationReferenceRelativePath = Tests.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CotEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CotEditor";
 			};
@@ -551,8 +557,9 @@
 			baseConfigurationReferenceAnchor = 2A1AFDC32C92990300BF2C32 /* Configurations */;
 			baseConfigurationReferenceRelativePath = "UI-Tests.xcconfig";
 			buildSettings = {
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wolfrosch.CotEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CotEditor;
 			};
@@ -640,12 +647,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "Accent Color";
 				CURRENT_PROJECT_VERSION = 801;
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = CotEditor/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				MARKETING_VERSION = "7.0.0-alpha";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditor;
 				PRODUCT_NAME = CotEditor;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_CONCISE_MAGIC_FILE = YES;
@@ -668,8 +676,9 @@
 			baseConfigurationReferenceRelativePath = Tests.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CotEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CotEditor";
 			};
@@ -680,8 +689,9 @@
 			baseConfigurationReferenceAnchor = 2A1AFDC32C92990300BF2C32 /* Configurations */;
 			baseConfigurationReferenceRelativePath = "UI-Tests.xcconfig";
 			buildSettings = {
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wolfrosch.CotEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CotEditor;
 			};
@@ -716,8 +726,9 @@
 			baseConfigurationReferenceAnchor = 2A1AFDC32C92990300BF2C32 /* Configurations */;
 			baseConfigurationReferenceRelativePath = "UI-Tests.xcconfig";
 			buildSettings = {
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wolfrosch.CotEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CotEditor;
 			};
@@ -728,8 +739,9 @@
 			baseConfigurationReferenceAnchor = 2A1AFDC32C92990300BF2C32 /* Configurations */;
 			baseConfigurationReferenceRelativePath = "UI-Tests.xcconfig";
 			buildSettings = {
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.wolfrosch.CotEditorUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = CotEditor;
 			};
@@ -743,12 +755,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "Accent Color";
 				CURRENT_PROJECT_VERSION = 801;
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = CotEditor/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				MARKETING_VERSION = "7.0.0-alpha";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditor;
 				PRODUCT_NAME = CotEditor;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_CONCISE_MAGIC_FILE = YES;
@@ -773,12 +786,13 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = "Accent Color";
 				CURRENT_PROJECT_VERSION = 801;
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = NO;
 				INFOPLIST_FILE = CotEditor/Info.plist;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				MARKETING_VERSION = "7.0.0-alpha";
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditor;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditor;
 				PRODUCT_NAME = CotEditor;
 				SWIFT_STRICT_CONCURRENCY = complete;
 				SWIFT_UPCOMING_FEATURE_CONCISE_MAGIC_FILE = YES;
@@ -801,8 +815,9 @@
 			baseConfigurationReferenceRelativePath = Tests.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CotEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CotEditor";
 			};
@@ -814,8 +829,9 @@
 			baseConfigurationReferenceRelativePath = Tests.xcconfig;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				DEVELOPMENT_TEAM = C4XW4P5L2Q;
 				GENERATE_INFOPLIST_FILE = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.coteditor.CotEditorTests;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sorenstarck.CotEditorTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/CotEditor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/CotEditor";
 			};
@@ -1013,6 +1029,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		2A5E7A002F0700A700000000 /* XCRemoteSwiftPackageReference "SwiftTerm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/migueldeicaza/SwiftTerm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		2AAAE6E326DB82F800C5F0AC /* XCRemoteSwiftPackageReference "Sparkle" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/sparkle-project/Sparkle";
@@ -1051,6 +1075,11 @@
 		2A1380082C22E9B500093BF3 /* EditorCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = EditorCore;
+		};
+		2A5E7A012F0700A700000000 /* SwiftTerm */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2A5E7A002F0700A700000000 /* XCRemoteSwiftPackageReference "SwiftTerm" */;
+			productName = SwiftTerm;
 		};
 		2A644BC82F0665A700E1975F /* Syntax */ = {
 			isa = XCSwiftPackageProductDependency;

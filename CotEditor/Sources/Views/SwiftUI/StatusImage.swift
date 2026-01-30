@@ -56,12 +56,12 @@ struct StatusImage: View {
     
     
     private var color: Color {
-        
+
         switch self.status {
             case .none: fatalError()
-            case .unavailable: .red
-            case .partiallyAvailable: .orange
-            case .available: .green
+            case .unavailable: return Color.red
+            case .partiallyAvailable: return Color.orange
+            case .available: return Color.green
         }
     }
     

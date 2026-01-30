@@ -712,6 +712,32 @@ Gw
                                                 <action selector="toggleStatusBar:" target="Ady-hI-5gd" id="pjH-8E-CJp"/>
                                             </connections>
                                         </menuItem>
+                                        <menuItem title="Terminal" secondaryImage="terminal" catalog="system" id="TRM-00-001">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
+                                            <menu key="submenu" title="Terminal" id="TRM-00-002">
+                                                <items>
+                                                    <menuItem title="Show Terminal" secondaryImage="terminal" catalog="system" keyEquivalent="`" id="TRM-00-003">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES"/>
+                                                        <connections>
+                                                            <action selector="toggleTerminal:" target="Ady-hI-5gd" id="TRM-00-004"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="TRM-00-005"/>
+                                                    <menuItem title="New Terminal Tab" secondaryImage="plus" catalog="system" keyEquivalent="T" id="TRM-00-006">
+                                                        <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES"/>
+                                                        <connections>
+                                                            <action selector="newTerminalTab:" target="Ady-hI-5gd" id="TRM-00-007"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Close Terminal Tab" secondaryImage="xmark" catalog="system" keyEquivalent="W" id="TRM-00-008">
+                                                        <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES"/>
+                                                        <connections>
+                                                            <action selector="closeTerminalTab:" target="Ady-hI-5gd" id="TRM-00-009"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                </items>
+                                            </menu>
+                                        </menuItem>
                                         <menuItem isSeparatorItem="YES" id="366"/>
                                         <menuItem title="Move Focus to Next Editor" secondaryImage="inset.filled.bottomhalf.tophalf.rectangle" catalog="system" keyEquivalent="`" id="794">
                                             <modifierMask key="keyEquivalentModifierMask" control="YES"/>

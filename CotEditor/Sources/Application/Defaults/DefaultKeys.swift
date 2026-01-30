@@ -173,6 +173,14 @@ extension DefaultKeys {
     static let largeFileAlertThreshold = DefaultKey<Int>("largeFileAlertThreshold")
     static let savesTextOrientation = DefaultKey<Bool>("savesTextOrientation")
     static let maximumRecentSyntaxCount = DefaultKey<Int>("maximumRecentSyntaxCount")
-    
+
     static let lastVersion = DefaultKey<String?>("lastVersion")
+
+    // Terminal
+    static let terminalShellPath = DefaultKey<String>("terminalShellPath")
+    static let terminalFontSize = DefaultKey<Double>("terminalFontSize")
+    static let terminalUseEditorFont = DefaultKey<Bool>("terminalUseEditorFont")
+    static let terminalScrollbackLines = DefaultKey<Int>("terminalScrollbackLines")
+    static let terminalCursorStyle = DefaultKey<Int>("terminalCursorStyle")
+    static let showTerminal = DefaultKey<Bool>("showTerminal")
 }

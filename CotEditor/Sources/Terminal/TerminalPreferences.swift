@@ -1,0 +1,39 @@
+//
+//  TerminalPreferences.swift
+//
+//  CotEditor
+//  https://coteditor.com
+//
+//  Created for CotEditor terminal support.
+//
+//  ---------------------------------------------------------------------------
+//
+//  Licensed under the Apache License, Version 2.0 (the "License");
+//  you may not use this file except in compliance with the License.
+//  You may obtain a copy of the License at
+//
+//  https://www.apache.org/licenses/LICENSE-2.0
+//
+//  Unless required by applicable law or agreed to in writing, software
+//  distributed under the License is distributed on an "AS IS" BASIS,
+//  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+//  See the License for the specific language governing permissions and
+//  limitations under the License.
+//
+
+import Foundation
+
+/// Cursor styles for the terminal.
+enum TerminalCursorStyle: Int, CaseIterable, Sendable {
+    case block = 0
+    case underline = 1
+    case bar = 2
+
+    var label: String {
+        switch self {
+        case .block: String(localized: "TerminalCursorStyle.block", defaultValue: "Block", table: "TerminalSettings")
+        case .underline: String(localized: "TerminalCursorStyle.underline", defaultValue: "Underline", table: "TerminalSettings")
+        case .bar: String(localized: "TerminalCursorStyle.bar", defaultValue: "Bar", table: "TerminalSettings")
+        }
+    }
+}

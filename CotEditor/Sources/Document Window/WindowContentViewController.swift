@@ -276,10 +276,21 @@ final class WindowContentViewController: NSSplitViewController, NSToolbarItemVal
                 (item as? NSMenuItem)?.title = UserDefaults.standard[.showStatusBar]
                     ? String(localized: "Hide Status Bar", table: "MainMenu")
                     : String(localized: "Show Status Bar", table: "MainMenu")
-                
+
+            case #selector(toggleTerminal):
+                (item as? NSMenuItem)?.title = UserDefaults.standard[.showTerminal]
+                    ? String(localized: "Hide Terminal", table: "MainMenu")
+                    : String(localized: "Show Terminal", table: "MainMenu")
+
+            case #selector(newTerminalTab):
+                break
+
+            case #selector(closeTerminalTab):
+                return UserDefaults.standard[.showTerminal]
+
             default: break
         }
-        
+
         return super.validateUserInterfaceItem(item)
     }
     
@@ -352,11 +363,39 @@ final class WindowContentViewController: NSSplitViewController, NSToolbarItemVal
     
     /// Toggles the visibility of status bar with fancy animation (sync all documents).
     @IBAction func toggleStatusBar(_ sender: Any?) {
-        
+
         UserDefaults.standard[.showStatusBar].toggle()
     }
-    
-    
+
+
+    /// Toggles the visibility of the terminal panel.
+    @IBAction func toggleTerminal(_ sender: Any?) {
+
+        self.contentViewController.toggleTerminal()
+    }
+
+
+    /// Creates a new terminal tab.
+    @IBAction func newTerminalTab(_ sender: Any?) {
+
+        self.contentViewController.newTerminalTab()
+    }
+
+
+    /// Closes the current terminal tab.
+    @IBAction func closeTerminalTab(_ sender: Any?) {
+
+        self.contentViewController.closeTerminalTab()
+    }
+
+
+    /// Focuses the terminal.
+    @IBAction func focusTerminal(_ sender: Any?) {
+
+        self.contentViewController.showTerminal()
+    }
+
+
     // MARK: Private Methods
     
     /// The view controller for the content view.

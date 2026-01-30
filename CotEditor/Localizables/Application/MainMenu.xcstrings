@@ -1909,6 +1909,9 @@
         }
       }
     },
+    "Hide Terminal" : {
+
+    },
     "Insert Color Code" : {
       "localizations" : {
         "cs" : {
@@ -4618,6 +4621,9 @@
           }
         }
       }
+    },
+    "Show Terminal" : {
+
     },
     "Shuffle Lines" : {
       "localizations" : {

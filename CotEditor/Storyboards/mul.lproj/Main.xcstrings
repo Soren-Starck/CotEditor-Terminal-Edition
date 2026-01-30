@@ -23977,6 +23977,66 @@
         }
       }
     },
+    "TRM-00-001.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Terminal\"; ObjectID = \"TRM-00-001\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Terminal"
+          }
+        }
+      }
+    },
+    "TRM-00-002.title" : {
+      "comment" : "Class = \"NSMenu\"; title = \"Terminal\"; ObjectID = \"TRM-00-002\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Terminal"
+          }
+        }
+      }
+    },
+    "TRM-00-003.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Show Terminal\"; ObjectID = \"TRM-00-003\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Show Terminal"
+          }
+        }
+      }
+    },
+    "TRM-00-006.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"New Terminal Tab\"; ObjectID = \"TRM-00-006\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "New Terminal Tab"
+          }
+        }
+      }
+    },
+    "TRM-00-008.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Close Terminal Tab\"; ObjectID = \"TRM-00-008\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Close Terminal Tab"
+          }
+        }
+      }
+    },
     "tWx-pj-3PL.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Insert by Unicode Code Point…\"; ObjectID = \"tWx-pj-3PL\";",
       "extractionState" : "extracted_with_value",

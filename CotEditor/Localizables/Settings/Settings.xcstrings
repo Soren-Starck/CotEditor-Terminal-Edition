@@ -857,6 +857,17 @@
         }
       }
     },
+    "SettingsPane.terminal.label" : {
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Terminal"
+          }
+        }
+      }
+    },
     "SettingsPane.window.label" : {
       "extractionState" : "extracted_with_value",
       "localizations" : {
