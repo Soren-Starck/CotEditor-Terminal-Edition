@@ -24,6 +24,7 @@
 import AppKit
 import SwiftUI
 import Combine
+import Defaults
 
 
 /// Observable state for the terminal tab bar.
@@ -36,6 +37,7 @@ final class TerminalTabBarState: ObservableObject {
     var onNewTab: (() -> Void)?
     var onCloseTab: ((UUID) -> Void)?
     var onSelectTab: ((UUID) -> Void)?
+    var onCollapse: (() -> Void)?
 }
 
 
@@ -99,6 +101,9 @@ final class TerminalPanelViewController: NSViewController {
         }
         self.tabBarState.onSelectTab = { [weak self] id in
             self?.selectTerminal(id: id)
+        }
+        self.tabBarState.onCollapse = {
+            UserDefaults.standard[.showTerminal] = false
         }
 
         // Create tab bar with observable state
@@ -365,6 +370,19 @@ final class TerminalPanelViewController: NSViewController {
     }
 
 
+    /// Updates the working directory and changes to it in running terminals.
+    ///
+    /// - Parameter directory: The new working directory.
+    func updateWorkingDirectory(_ directory: URL) {
+        self.workingDirectory = directory
+
+        // Change directory in all running terminals
+        for terminal in terminals where terminal.isRunning {
+            terminal.changeDirectory(to: directory)
+        }
+    }
+
+
     // MARK: Private Methods
 
     private func setupTerminalObservers(_ terminal: TerminalInstance) {
@@ -565,7 +583,8 @@ private struct TerminalTabBarWrapper: View {
             selectedTabID: $state.selectedTabID,
             onNewTab: { state.onNewTab?() },
             onCloseTab: { id in state.onCloseTab?(id) },
-            onSelectTab: { id in state.onSelectTab?(id) }
+            onSelectTab: { id in state.onSelectTab?(id) },
+            onCollapse: state.onCollapse
         )
     }
 }

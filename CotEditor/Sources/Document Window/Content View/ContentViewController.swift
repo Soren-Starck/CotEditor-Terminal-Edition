@@ -47,6 +47,7 @@ final class ContentViewController: NSSplitViewController {
 
     private var terminalViewItem: NSSplitViewItem?
     private var terminalObserver: AnyCancellable?
+    private var documentURLObserver: AnyCancellable?
 
 
     // MARK: Lifecycle
@@ -89,6 +90,23 @@ final class ContentViewController: NSSplitViewController {
             .sink { [weak self] show in
                 self?.terminalViewItem?.animator().isCollapsed = !show
             }
+
+        // Observe document's fileURL to update terminal working directory when it becomes available
+        if let document = self.document as? Document {
+            self.documentURLObserver = document.publisher(for: \.fileURL)
+                .compactMap { $0 }
+                .first()  // Only need the first non-nil value
+                .sink { [weak self] fileURL in
+                    guard let self else { return }
+                    let projectRoot = Self.findProjectRoot(from: fileURL)
+                    if self.terminalPanelViewController?.workingDirectory == nil ||
+                       self.terminalPanelViewController?.workingDirectory == FileManager.default.homeDirectoryForCurrentUser {
+                        self.terminalPanelViewController?.workingDirectory = projectRoot
+                        // Restart terminal with correct directory if it's already running
+                        self.terminalPanelViewController?.updateWorkingDirectory(projectRoot)
+                    }
+                }
+        }
     }
 
 
@@ -98,6 +116,8 @@ final class ContentViewController: NSSplitViewController {
 
         self.terminalObserver?.cancel()
         self.terminalObserver = nil
+        self.documentURLObserver?.cancel()
+        self.documentURLObserver = nil
     }
 
 

@@ -520,37 +520,59 @@ final class TerminalSplitContainerView: NSView {
 
         let overlay = NSView()
         overlay.wantsLayer = true
-        overlay.layer?.backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.3).cgColor
+        overlay.layer?.backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.35).cgColor
         overlay.layer?.borderColor = NSColor.controlAccentColor.cgColor
-        overlay.layer?.borderWidth = 2
-        overlay.layer?.cornerRadius = 4
+        overlay.layer?.borderWidth = 3
+        overlay.layer?.cornerRadius = 8
 
         let containerFrame = targetNode.containerView.convert(targetNode.containerView.bounds, to: self)
         var overlayFrame: NSRect
 
+        // Determine the icon for the drop zone
+        let iconName: String
         switch zone {
         case .left:
-            overlayFrame = NSRect(x: containerFrame.minX + 2,
-                                  y: containerFrame.minY + 2,
-                                  width: containerFrame.width / 2 - 4,
-                                  height: containerFrame.height - 4)
+            overlayFrame = NSRect(x: containerFrame.minX + 4,
+                                  y: containerFrame.minY + 4,
+                                  width: containerFrame.width / 2 - 8,
+                                  height: containerFrame.height - 8)
+            iconName = "rectangle.lefthalf.inset.filled"
         case .right:
-            overlayFrame = NSRect(x: containerFrame.midX + 2,
-                                  y: containerFrame.minY + 2,
-                                  width: containerFrame.width / 2 - 4,
-                                  height: containerFrame.height - 4)
+            overlayFrame = NSRect(x: containerFrame.midX + 4,
+                                  y: containerFrame.minY + 4,
+                                  width: containerFrame.width / 2 - 8,
+                                  height: containerFrame.height - 8)
+            iconName = "rectangle.righthalf.inset.filled"
         case .top:
-            overlayFrame = NSRect(x: containerFrame.minX + 2,
-                                  y: containerFrame.midY + 2,
-                                  width: containerFrame.width - 4,
-                                  height: containerFrame.height / 2 - 4)
+            overlayFrame = NSRect(x: containerFrame.minX + 4,
+                                  y: containerFrame.midY + 4,
+                                  width: containerFrame.width - 8,
+                                  height: containerFrame.height / 2 - 8)
+            iconName = "rectangle.tophalf.inset.filled"
         case .bottom:
-            overlayFrame = NSRect(x: containerFrame.minX + 2,
-                                  y: containerFrame.minY + 2,
-                                  width: containerFrame.width - 4,
-                                  height: containerFrame.height / 2 - 4)
+            overlayFrame = NSRect(x: containerFrame.minX + 4,
+                                  y: containerFrame.minY + 4,
+                                  width: containerFrame.width - 8,
+                                  height: containerFrame.height / 2 - 8)
+            iconName = "rectangle.bottomhalf.inset.filled"
         case .center:
-            overlayFrame = containerFrame.insetBy(dx: 4, dy: 4)
+            overlayFrame = containerFrame.insetBy(dx: 8, dy: 8)
+            iconName = "rectangle.center.inset.filled"
+        }
+
+        // Add an icon to indicate the split direction
+        let iconSize: CGFloat = 32
+        if let iconImage = NSImage(systemSymbolName: iconName, accessibilityDescription: nil) {
+            let iconView = NSImageView(image: iconImage)
+            iconView.frame = NSRect(
+                x: (overlayFrame.width - iconSize) / 2,
+                y: (overlayFrame.height - iconSize) / 2,
+                width: iconSize,
+                height: iconSize
+            )
+            iconView.contentTintColor = .white
+            iconView.imageScaling = .scaleProportionallyUpOrDown
+            overlay.addSubview(iconView)
         }
 
         overlay.frame = overlayFrame

@@ -136,6 +136,19 @@ final class TerminalInstance: NSObject, Identifiable {
     }
 
 
+    /// Changes the terminal's working directory.
+    ///
+    /// - Parameter directory: The new working directory.
+    func changeDirectory(to directory: URL) {
+        guard self.isRunning else { return }
+
+        self.workingDirectory = directory
+        let cdCommand = "cd \(Self.shellEscape(directory.path)) && clear\n"
+        self.terminalView.send(txt: cdCommand)
+        self.updateTitle()
+    }
+
+
     /// Updates the terminal font.
     func updateFont() {
         let fontSize = UserDefaults.standard[.terminalFontSize]

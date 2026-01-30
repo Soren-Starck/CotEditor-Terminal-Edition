@@ -45,6 +45,7 @@ struct TerminalTabBar: View {
     var onNewTab: () -> Void
     var onCloseTab: (UUID) -> Void
     var onSelectTab: ((UUID) -> Void)?
+    var onCollapse: (() -> Void)?
 
 
     var body: some View {
@@ -77,8 +78,20 @@ struct TerminalTabBar: View {
                     .foregroundStyle(.secondary)
             }
             .buttonStyle(.plain)
-            .padding(.horizontal, 8)
+            .padding(.trailing, 4)
             .help(String(localized: "New Terminal Tab", table: "Terminal"))
+
+            // Collapse button
+            if let onCollapse {
+                Button(action: onCollapse) {
+                    Image(systemName: "chevron.down")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
+                }
+                .buttonStyle(.plain)
+                .padding(.horizontal, 8)
+                .help(String(localized: "Hide Terminal", table: "Terminal"))
+            }
         }
         .frame(height: 26)
         .background(.bar)
@@ -182,6 +195,9 @@ private struct TerminalTabItem: View {
                 },
                 onCloseTab: { id in
                     tabs.removeAll { $0.id == id }
+                },
+                onCollapse: {
+                    print("Collapse tapped")
                 }
             )
             .onAppear {
