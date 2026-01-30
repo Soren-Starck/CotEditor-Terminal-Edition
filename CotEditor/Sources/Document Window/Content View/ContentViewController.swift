@@ -148,6 +148,20 @@ final class ContentViewController: NSSplitViewController {
     }
 
 
+    /// Splits the terminal horizontally (side by side).
+    func splitTerminalHorizontally() {
+        self.showTerminal()
+        self.terminalPanelViewController?.splitHorizontally()
+    }
+
+
+    /// Splits the terminal vertically (top and bottom).
+    func splitTerminalVertically() {
+        self.showTerminal()
+        self.terminalPanelViewController?.splitVertically()
+    }
+
+
     // MARK: Private Methods
 
     private func setupTerminalPanel() {

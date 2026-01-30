@@ -22,6 +22,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 /// Data model for a terminal tab.
 struct TerminalTab: Identifiable, Equatable {
@@ -81,11 +82,12 @@ struct TerminalTabBar: View {
         }
         .frame(height: 26)
         .background(.bar)
+        .ignoresSafeArea()
     }
 }
 
 
-/// Individual terminal tab item.
+/// Individual terminal tab item with drag support.
 private struct TerminalTabItem: View {
 
     let tab: TerminalTab
@@ -94,6 +96,7 @@ private struct TerminalTabItem: View {
     let onClose: () -> Void
 
     @State private var isHovering = false
+    @State private var isDragging = false
 
 
     var body: some View {
@@ -124,10 +127,35 @@ private struct TerminalTabItem: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(isSelected ? Color.accentColor.opacity(0.15) : (isHovering ? Color.primary.opacity(0.05) : Color.clear))
         )
+        .opacity(isDragging ? 0.5 : 1.0)
         .onTapGesture(perform: onSelect)
         .onHover { isHovering = $0 }
         .animation(.easeInOut(duration: 0.1), value: isHovering)
         .animation(.easeInOut(duration: 0.1), value: isSelected)
+        .onDrag {
+            isDragging = true
+            let provider = NSItemProvider()
+            // Set the UUID string as data for the terminal tab drag type
+            let uuidString = tab.id.uuidString
+            provider.registerDataRepresentation(forTypeIdentifier: UTType.terminalTab.identifier, visibility: .all) { completion in
+                completion(uuidString.data(using: .utf8), nil)
+                return nil
+            }
+            // Also register as plain text for compatibility
+            provider.registerDataRepresentation(forTypeIdentifier: UTType.plainText.identifier, visibility: .all) { completion in
+                completion(uuidString.data(using: .utf8), nil)
+                return nil
+            }
+            return provider
+        }
+        .onChange(of: isDragging) { oldValue, newValue in
+            // Reset dragging state after a delay
+            if newValue {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    isDragging = false
+                }
+            }
+        }
     }
 }
 

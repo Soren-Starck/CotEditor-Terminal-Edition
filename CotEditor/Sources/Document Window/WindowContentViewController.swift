@@ -288,6 +288,12 @@ final class WindowContentViewController: NSSplitViewController, NSToolbarItemVal
             case #selector(closeTerminalTab):
                 return UserDefaults.standard[.showTerminal]
 
+            case #selector(splitTerminalHorizontally):
+                return UserDefaults.standard[.showTerminal]
+
+            case #selector(splitTerminalVertically):
+                return UserDefaults.standard[.showTerminal]
+
             default: break
         }
 
@@ -386,6 +392,20 @@ final class WindowContentViewController: NSSplitViewController, NSToolbarItemVal
     @IBAction func closeTerminalTab(_ sender: Any?) {
 
         self.contentViewController.closeTerminalTab()
+    }
+
+
+    /// Splits the terminal horizontally (side by side).
+    @IBAction func splitTerminalHorizontally(_ sender: Any?) {
+
+        self.contentViewController.splitTerminalHorizontally()
+    }
+
+
+    /// Splits the terminal vertically (top and bottom).
+    @IBAction func splitTerminalVertically(_ sender: Any?) {
+
+        self.contentViewController.splitTerminalVertically()
     }
 
 

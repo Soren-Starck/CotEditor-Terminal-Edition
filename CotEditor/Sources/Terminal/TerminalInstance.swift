@@ -166,6 +166,9 @@ final class TerminalInstance: NSObject, Identifiable {
         self.terminalView.processDelegate = self
         self.terminalView.translatesAutoresizingMaskIntoConstraints = false
 
+        // Ensure the terminal view uses a layer for proper rendering
+        self.terminalView.wantsLayer = true
+
         // Configure terminal options
         let scrollback = UserDefaults.standard[.terminalScrollbackLines]
         // Note: SwiftTerm handles scrollback internally
@@ -178,6 +181,10 @@ final class TerminalInstance: NSObject, Identifiable {
 
         // Apply cursor style
         self.updateCursorStyle()
+
+        // Set content hugging to allow the terminal to fill available space
+        self.terminalView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        self.terminalView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 
 
