@@ -24,6 +24,39 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+
+/// Shared state for terminal tab drag operations.
+/// Thread-safe storage for drag operation data.
+final class TerminalDragState: @unchecked Sendable {
+
+    static let shared = TerminalDragState()
+
+    private let lock = NSLock()
+    private var _draggedTerminalID: UUID?
+
+    /// The ID of the terminal currently being dragged.
+    var draggedTerminalID: UUID? {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return _draggedTerminalID
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            _draggedTerminalID = newValue
+        }
+    }
+
+    private init() {}
+
+    /// Clears the drag state.
+    func clear() {
+        draggedTerminalID = nil
+    }
+}
+
+
 /// Data model for a terminal tab.
 struct TerminalTab: Identifiable, Equatable {
     let id: UUID
@@ -147,18 +180,17 @@ private struct TerminalTabItem: View {
         .animation(.easeInOut(duration: 0.1), value: isSelected)
         .onDrag {
             isDragging = true
-            let provider = NSItemProvider()
-            // Set the UUID string as data for the terminal tab drag type
-            let uuidString = tab.id.uuidString
-            provider.registerDataRepresentation(forTypeIdentifier: UTType.terminalTab.identifier, visibility: .all) { completion in
-                completion(uuidString.data(using: .utf8), nil)
-                return nil
-            }
-            // Also register as plain text for compatibility
-            provider.registerDataRepresentation(forTypeIdentifier: UTType.plainText.identifier, visibility: .all) { completion in
-                completion(uuidString.data(using: .utf8), nil)
-                return nil
-            }
+            let uuidString = tab.id.uuidString as NSString
+
+            // Store in shared state for fallback access
+            TerminalDragState.shared.draggedTerminalID = tab.id
+
+            // Use NSItemProvider with NSString for synchronous data access
+            let provider = NSItemProvider(object: uuidString)
+
+            // Also register with our custom type identifier
+            provider.registerObject(uuidString, visibility: .all)
+
             return provider
         }
         .onChange(of: isDragging) { oldValue, newValue in

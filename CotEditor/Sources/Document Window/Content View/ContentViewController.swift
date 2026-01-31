@@ -91,21 +91,36 @@ final class ContentViewController: NSSplitViewController {
                 self?.terminalViewItem?.animator().isCollapsed = !show
             }
 
-        // Observe document's fileURL to update terminal working directory when it becomes available
+        // Update terminal working directory from document
+        // First check if we already have a fileURL (for existing documents)
+        if let document = self.document as? Document,
+           let fileURL = document.fileURL {
+            let projectRoot = Self.findProjectRoot(from: fileURL)
+            self.updateTerminalWorkingDirectoryIfNeeded(projectRoot)
+        }
+
+        // Also observe for future changes (e.g., when a new document is saved)
         if let document = self.document as? Document {
             self.documentURLObserver = document.publisher(for: \.fileURL)
                 .compactMap { $0 }
-                .first()  // Only need the first non-nil value
                 .sink { [weak self] fileURL in
                     guard let self else { return }
                     let projectRoot = Self.findProjectRoot(from: fileURL)
-                    if self.terminalPanelViewController?.workingDirectory == nil ||
-                       self.terminalPanelViewController?.workingDirectory == FileManager.default.homeDirectoryForCurrentUser {
-                        self.terminalPanelViewController?.workingDirectory = projectRoot
-                        // Restart terminal with correct directory if it's already running
-                        self.terminalPanelViewController?.updateWorkingDirectory(projectRoot)
-                    }
+                    self.updateTerminalWorkingDirectoryIfNeeded(projectRoot)
                 }
+        }
+    }
+
+
+    /// Updates terminal working directory if it's still at home directory.
+    private func updateTerminalWorkingDirectoryIfNeeded(_ projectRoot: URL) {
+        let homeDir = FileManager.default.homeDirectoryForCurrentUser
+        let currentDir = self.terminalPanelViewController?.workingDirectory
+
+        // Only update if terminal is still in home directory or unset
+        if currentDir == nil || currentDir == homeDir {
+            self.terminalPanelViewController?.workingDirectory = projectRoot
+            self.terminalPanelViewController?.updateWorkingDirectory(projectRoot)
         }
     }
 

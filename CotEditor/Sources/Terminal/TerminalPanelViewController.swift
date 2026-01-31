@@ -436,8 +436,16 @@ final class TerminalPanelViewController: NSViewController {
             return
         }
 
-        // If dragging to the same position in the same tab, ignore
+        // If dragging to the center of the same terminal, ignore (no-op)
         if sourceTabID == targetTabID && targetTerminalID == draggedTerminalID && zone == .center {
+            return
+        }
+
+        // Special case: Dragging active tab onto itself with edge zone = CREATE NEW SPLIT
+        // This means the user wants to split the current terminal with a NEW terminal
+        if sourceTabID == targetTabID && sourceTabID == draggedTerminalID && zone != .center {
+            // Create a new terminal in the split position (don't move the existing one)
+            createTerminalSplit(targetID: draggedTerminalID, zone: zone)
             return
         }
 
@@ -446,10 +454,8 @@ final class TerminalPanelViewController: NSViewController {
         // Remove from source
         if let sourceContainer = splitContainers[sourceTabID] {
             if sourceTabID == draggedTerminalID {
-                // The dragged terminal IS the tab - we need to handle this differently
-                // Just add to target without removing the source tab yet
-
-                // Don't allow dropping a tab onto itself
+                // The dragged terminal IS the tab - move it to another tab
+                // Don't allow dropping a tab onto itself (center zone already handled above)
                 if targetTabID == sourceTabID {
                     return
                 }

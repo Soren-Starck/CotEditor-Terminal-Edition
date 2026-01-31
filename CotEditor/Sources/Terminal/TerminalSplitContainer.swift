@@ -319,8 +319,11 @@ final class TerminalSplitContainerView: NSView {
 
     private func setup() {
         wantsLayer = true
-        // Register for the terminal tab UTType
-        registerForDraggedTypes([NSPasteboard.PasteboardType(UTType.terminalTab.identifier)])
+        // Register for drag types - both custom type and plain text (NSString is written as plain text)
+        registerForDraggedTypes([
+            NSPasteboard.PasteboardType(UTType.terminalTab.identifier),
+            .string
+        ])
     }
 
 
@@ -427,16 +430,18 @@ final class TerminalSplitContainerView: NSView {
             return false
         }
 
-        // Try to read UUID from the pasteboard
-        let pasteboardType = NSPasteboard.PasteboardType(UTType.terminalTab.identifier)
+        // Try to read UUID from the pasteboard (multiple fallback methods)
         var terminalID: UUID?
 
-        if let data = sender.draggingPasteboard.data(forType: pasteboardType),
-           let uuidString = String(data: data, encoding: .utf8) {
-            terminalID = UUID(uuidString: uuidString)
-        } else if let string = sender.draggingPasteboard.string(forType: .string),
-                  let uuid = UUID(uuidString: string) {
+        // Method 1: Try to read NSString from pasteboard (synchronous)
+        if let uuidString = sender.draggingPasteboard.string(forType: .string),
+           let uuid = UUID(uuidString: uuidString) {
             terminalID = uuid
+        }
+
+        // Method 2: Use shared drag state as fallback
+        if terminalID == nil {
+            terminalID = TerminalDragState.shared.draggedTerminalID
         }
 
         guard let terminalID else {
@@ -445,6 +450,10 @@ final class TerminalSplitContainerView: NSView {
         }
 
         onDrop?(terminalID, zone, dropTargetTerminalID)
+
+        // Clear the shared drag state
+        TerminalDragState.shared.clear()
+
         hideDropZoneOverlay()
         activeDropZone = nil
         dropTargetTerminalID = nil
