@@ -514,10 +514,10 @@ final class TerminalPanelViewController: NSViewController {
 
         // Check if the first responder is one of our terminal views
         for terminal in terminals {
-            if terminal.terminalView === firstResponder || terminal.terminalView.isDescendant(of: firstResponder as? NSView ?? NSView()) {
+            if terminal.terminalView === firstResponder {
                 return terminal
             }
-            // Also check if first responder is descendant of terminal view
+            // Check if first responder is a descendant of terminal view
             if let responderView = firstResponder as? NSView,
                responderView.isDescendant(of: terminal.terminalView) {
                 return terminal

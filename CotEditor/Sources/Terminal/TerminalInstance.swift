@@ -140,12 +140,11 @@ final class TerminalInstance: NSObject, Identifiable {
     ///
     /// - Parameter directory: The new working directory.
     func changeDirectory(to directory: URL) {
-        guard self.isRunning else { return }
-
         self.workingDirectory = directory
+        self.updateTitle()
+        guard self.isRunning else { return }
         let cdCommand = "cd \(Self.shellEscape(directory.path)) && clear\n"
         self.terminalView.send(txt: cdCommand)
-        self.updateTitle()
     }
 
 

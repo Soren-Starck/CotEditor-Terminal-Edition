@@ -162,7 +162,10 @@ final class TerminalSplitNode {
 
         // Set equal sizes
         DispatchQueue.main.async {
-            splitView.setPosition(splitView.bounds.size.width / 2, ofDividerAt: 0)
+            let position = splitView.isVertical
+                ? splitView.bounds.size.width / 2
+                : splitView.bounds.size.height / 2
+            splitView.setPosition(position, ofDividerAt: 0)
         }
 
         return newNode
@@ -470,13 +473,15 @@ final class TerminalSplitContainerView: NSView {
 
 
     private func determineDropZone(at point: NSPoint, in node: TerminalSplitNode) -> (TerminalDropZone, UUID?) {
-        let frame = node.containerView.frame
+        // Convert point to the node's container coordinate space
+        let localPoint = node.containerView.convert(point, from: self)
+        let bounds = node.containerView.bounds
 
         switch node.content {
         case .terminal(let terminal):
             // Calculate zone based on position within terminal
-            let relativeX = (point.x - frame.minX) / frame.width
-            let relativeY = (point.y - frame.minY) / frame.height
+            let relativeX = localPoint.x / bounds.width
+            let relativeY = localPoint.y / bounds.height
 
             let edgeThreshold: CGFloat = 0.25
 
@@ -493,13 +498,13 @@ final class TerminalSplitContainerView: NSView {
             }
 
         case .split(_, let first, let second):
-            // Check which child contains the point
-            let firstFrame = first.containerView.frame
-            let secondFrame = second.containerView.frame
+            // Convert point to the split view coordinate space for child frame checks
+            let firstLocalPoint = first.containerView.convert(point, from: self)
+            let secondLocalPoint = second.containerView.convert(point, from: self)
 
-            if firstFrame.contains(point) {
+            if first.containerView.bounds.contains(firstLocalPoint) {
                 return determineDropZone(at: point, in: first)
-            } else if secondFrame.contains(point) {
+            } else if second.containerView.bounds.contains(secondLocalPoint) {
                 return determineDropZone(at: point, in: second)
             }
 
