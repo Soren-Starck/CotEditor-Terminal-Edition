@@ -22,6 +22,7 @@
 //
 
 import AppKit
+import SwiftTerm
 import UniformTypeIdentifiers
 
 
@@ -70,6 +71,20 @@ final class TerminalSplitNode {
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
         self.containerView.wantsLayer = true
 
+        setupTerminalView(terminal)
+    }
+
+
+    /// Creates a node containing a single terminal with a preserved frame.
+    /// Used when moving a terminal to prevent it from resizing to zero and losing history.
+    init(terminal: TerminalInstance, initialFrame: NSRect) {
+        self.content = .terminal(terminal)
+        self.containerView = NSView(frame: initialFrame)
+        self.containerView.translatesAutoresizingMaskIntoConstraints = false
+        self.containerView.wantsLayer = true
+
+        // Set the terminal view's frame before adding to prevent resize flicker
+        terminal.terminalView.frame = initialFrame
         setupTerminalView(terminal)
     }
 
@@ -129,15 +144,19 @@ final class TerminalSplitNode {
         splitView.dividerStyle = .thin
         splitView.wantsLayer = true
 
-        // Store current content
+        // Store current content and preserve frame to prevent terminal reset
         let currentContent = self.content
+        let preservedFrame = self.containerView.bounds
 
         // Create a node for the current content
+        // IMPORTANT: Preserve the frame to prevent the terminal from resizing to zero
         let currentNode: TerminalSplitNode
         switch currentContent {
         case .terminal(let existingTerminal):
+            // Save the terminal view's frame before moving
+            let terminalFrame = existingTerminal.terminalView.frame
             existingTerminal.terminalView.removeFromSuperview()
-            currentNode = TerminalSplitNode(terminal: existingTerminal)
+            currentNode = TerminalSplitNode(terminal: existingTerminal, initialFrame: terminalFrame)
         case .split(let existingSplit, let first, let second):
             existingSplit.removeFromSuperview()
             currentNode = TerminalSplitNode(splitView: existingSplit, first: first, second: second)
@@ -150,6 +169,16 @@ final class TerminalSplitNode {
         firstNode.parent = self
         secondNode.parent = self
 
+        // Pre-size the container views to prevent zero-size issues
+        let halfSize: NSSize
+        if direction == .horizontal {
+            halfSize = NSSize(width: preservedFrame.width / 2, height: preservedFrame.height)
+        } else {
+            halfSize = NSSize(width: preservedFrame.width, height: preservedFrame.height / 2)
+        }
+        firstNode.containerView.frame = NSRect(origin: .zero, size: halfSize)
+        secondNode.containerView.frame = NSRect(origin: .zero, size: halfSize)
+
         // Add views to split view
         splitView.addSubview(firstNode.containerView)
         splitView.addSubview(secondNode.containerView)
@@ -160,7 +189,7 @@ final class TerminalSplitNode {
         // Set up the split view in our container
         setupSplitView(splitView)
 
-        // Set equal sizes
+        // Set equal sizes after layout
         DispatchQueue.main.async {
             let position = splitView.isVertical
                 ? splitView.bounds.size.width / 2
