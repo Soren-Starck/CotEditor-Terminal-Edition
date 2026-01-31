@@ -24037,6 +24037,30 @@
         }
       }
     },
+    "TRM-00-011.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Split Terminal Right\"; ObjectID = \"TRM-00-011\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Split Terminal Right"
+          }
+        }
+      }
+    },
+    "TRM-00-013.title" : {
+      "comment" : "Class = \"NSMenuItem\"; title = \"Split Terminal Down\"; ObjectID = \"TRM-00-013\";",
+      "extractionState" : "extracted_with_value",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "Split Terminal Down"
+          }
+        }
+      }
+    },
     "tWx-pj-3PL.title" : {
       "comment" : "Class = \"NSMenuItem\"; title = \"Insert by Unicode Code Point…\"; ObjectID = \"tWx-pj-3PL\";",
       "extractionState" : "extracted_with_value",

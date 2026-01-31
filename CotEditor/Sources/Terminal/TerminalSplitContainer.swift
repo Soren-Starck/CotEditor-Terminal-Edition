@@ -43,8 +43,162 @@ enum TerminalDropZone {
 }
 
 
+/// Header view for a terminal pane, showing title and providing drag functionality.
+final class TerminalPaneHeaderView: NSView {
+
+    // MARK: Properties
+
+    private let titleLabel = NSTextField(labelWithString: "")
+    private let closeButton = NSButton()
+    private let iconView = NSImageView()
+
+    private(set) var terminalID: UUID?
+    var onClose: (() -> Void)?
+
+    private var isDragging = false
+
+
+    // MARK: Lifecycle
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setup()
+    }
+
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setup()
+    }
+
+
+    private func setup() {
+        wantsLayer = true
+        layer?.backgroundColor = NSColor.windowBackgroundColor.withAlphaComponent(0.95).cgColor
+
+        // Terminal icon
+        iconView.image = NSImage(systemSymbolName: "terminal", accessibilityDescription: "Terminal")
+        iconView.contentTintColor = .secondaryLabelColor
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(iconView)
+
+        // Title label
+        titleLabel.font = .systemFont(ofSize: 11, weight: .medium)
+        titleLabel.textColor = .secondaryLabelColor
+        titleLabel.lineBreakMode = .byTruncatingMiddle
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(titleLabel)
+
+        // Close button
+        closeButton.image = NSImage(systemSymbolName: "xmark", accessibilityDescription: "Close")
+        closeButton.bezelStyle = .accessoryBarAction
+        closeButton.isBordered = false
+        closeButton.imageScaling = .scaleProportionallyDown
+        closeButton.contentTintColor = .tertiaryLabelColor
+        closeButton.target = self
+        closeButton.action = #selector(closeClicked)
+        closeButton.translatesAutoresizingMaskIntoConstraints = false
+        addSubview(closeButton)
+
+        NSLayoutConstraint.activate([
+            iconView.leadingAnchor.constraint(equalTo: leadingAnchor, constant: 8),
+            iconView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            iconView.widthAnchor.constraint(equalToConstant: 14),
+            iconView.heightAnchor.constraint(equalToConstant: 14),
+
+            titleLabel.leadingAnchor.constraint(equalTo: iconView.trailingAnchor, constant: 6),
+            titleLabel.centerYAnchor.constraint(equalTo: centerYAnchor),
+            titleLabel.trailingAnchor.constraint(lessThanOrEqualTo: closeButton.leadingAnchor, constant: -8),
+
+            closeButton.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -6),
+            closeButton.centerYAnchor.constraint(equalTo: centerYAnchor),
+            closeButton.widthAnchor.constraint(equalToConstant: 16),
+            closeButton.heightAnchor.constraint(equalToConstant: 16),
+        ])
+
+        // Register for dragging
+        registerForDraggedTypes([.string])
+    }
+
+
+    // MARK: Public Methods
+
+    func configure(terminal: TerminalInstance, number: Int) {
+        self.terminalID = terminal.id
+        updateTitle(terminal.title, number: number)
+    }
+
+
+    func updateTitle(_ title: String, number: Int) {
+        titleLabel.stringValue = "\(number): \(title)"
+    }
+
+
+    // MARK: Actions
+
+    @objc private func closeClicked() {
+        onClose?()
+    }
+
+
+    // MARK: Mouse Events
+
+    override func mouseDown(with event: NSEvent) {
+        isDragging = false
+        super.mouseDown(with: event)
+    }
+
+
+    override func mouseDragged(with event: NSEvent) {
+        guard let terminalID else { return }
+
+        if !isDragging {
+            isDragging = true
+
+            // Store in shared state
+            TerminalDragState.shared.draggedTerminalID = terminalID
+
+            // Create dragging item
+            let pasteboardItem = NSPasteboardItem()
+            pasteboardItem.setString(terminalID.uuidString, forType: .string)
+
+            let draggingItem = NSDraggingItem(pasteboardWriter: pasteboardItem)
+            draggingItem.setDraggingFrame(bounds, contents: snapshot())
+
+            beginDraggingSession(with: [draggingItem], event: event, source: self)
+        }
+    }
+
+
+    private func snapshot() -> NSImage {
+        let image = NSImage(size: bounds.size)
+        image.lockFocus()
+        if let context = NSGraphicsContext.current?.cgContext {
+            layer?.render(in: context)
+        }
+        image.unlockFocus()
+        return image
+    }
+}
+
+
+// MARK: - NSDraggingSource
+
+extension TerminalPaneHeaderView: NSDraggingSource {
+
+    func draggingSession(_ session: NSDraggingSession, sourceOperationMaskFor context: NSDraggingContext) -> NSDragOperation {
+        return .move
+    }
+
+    func draggingSession(_ session: NSDraggingSession, endedAt screenPoint: NSPoint, operation: NSDragOperation) {
+        isDragging = false
+    }
+}
+
+
 /// A node in the terminal split tree.
 /// Can either be a single terminal or a split containing two child nodes.
+@MainActor
 final class TerminalSplitNode {
 
     // MARK: Types
@@ -60,32 +214,48 @@ final class TerminalSplitNode {
     private(set) var content: Content
     weak var parent: TerminalSplitNode?
     let containerView: NSView
+    private var headerView: TerminalPaneHeaderView?
+
+    /// Callback when close is requested for this terminal
+    var onCloseTerminal: ((UUID) -> Void)?
 
 
     // MARK: Lifecycle
 
     /// Creates a node containing a single terminal.
-    init(terminal: TerminalInstance) {
+    ///
+    /// - Parameters:
+    ///   - terminal: The terminal instance.
+    ///   - showHeader: Whether to show the pane header (for split terminals).
+    init(terminal: TerminalInstance, showHeader: Bool = false) {
         self.content = .terminal(terminal)
         self.containerView = NSView()
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
         self.containerView.wantsLayer = true
+        self.headerView = nil
 
-        setupTerminalView(terminal)
+        self.configureTerminalView(terminal, showHeader: showHeader)
     }
 
 
     /// Creates a node containing a single terminal with a preserved frame.
     /// Used when moving a terminal to prevent it from resizing to zero and losing history.
-    init(terminal: TerminalInstance, initialFrame: NSRect) {
+    ///
+    /// - Parameters:
+    ///   - terminal: The terminal instance.
+    ///   - initialFrame: The frame to preserve.
+    ///   - showHeader: Whether to show the pane header.
+    init(terminal: TerminalInstance, initialFrame: NSRect, showHeader: Bool = false) {
         self.content = .terminal(terminal)
         self.containerView = NSView(frame: initialFrame)
         self.containerView.translatesAutoresizingMaskIntoConstraints = false
         self.containerView.wantsLayer = true
+        self.headerView = nil
 
         // Set the terminal view's frame before adding to prevent resize flicker
         terminal.terminalView.frame = initialFrame
-        setupTerminalView(terminal)
+
+        self.configureTerminalView(terminal, showHeader: showHeader)
     }
 
 
@@ -134,8 +304,9 @@ final class TerminalSplitNode {
     /// - Returns: The new node containing the terminal.
     @discardableResult
     func split(with terminal: TerminalInstance, direction: TerminalSplitDirection, newTerminalFirst: Bool) -> TerminalSplitNode {
-        // Create the new terminal node
-        let newNode = TerminalSplitNode(terminal: terminal)
+        // Create the new terminal node with header (since it's now in a split)
+        let newNode = TerminalSplitNode(terminal: terminal, showHeader: true)
+        newNode.onCloseTerminal = self.onCloseTerminal
 
         // Create split view
         let splitView = NSSplitView()
@@ -148,6 +319,10 @@ final class TerminalSplitNode {
         let currentContent = self.content
         let preservedFrame = self.containerView.bounds
 
+        // Also remove header view if present
+        self.headerView?.removeFromSuperview()
+        self.headerView = nil
+
         // Create a node for the current content
         // IMPORTANT: Preserve the frame to prevent the terminal from resizing to zero
         let currentNode: TerminalSplitNode
@@ -156,7 +331,9 @@ final class TerminalSplitNode {
             // Save the terminal view's frame before moving
             let terminalFrame = existingTerminal.terminalView.frame
             existingTerminal.terminalView.removeFromSuperview()
-            currentNode = TerminalSplitNode(terminal: existingTerminal, initialFrame: terminalFrame)
+            // Create with header since we're now in a split
+            currentNode = TerminalSplitNode(terminal: existingTerminal, initialFrame: terminalFrame, showHeader: true)
+            currentNode.onCloseTerminal = self.onCloseTerminal
         case .split(let existingSplit, let first, let second):
             existingSplit.removeFromSuperview()
             currentNode = TerminalSplitNode(splitView: existingSplit, first: first, second: second)
@@ -259,18 +436,52 @@ final class TerminalSplitNode {
     }
 
 
+    /// Updates the header title with the given terminal number.
+    func updateHeaderNumber(_ number: Int) {
+        guard let terminal else { return }
+        headerView?.updateTitle(terminal.title, number: number)
+    }
+
+
     // MARK: Private Methods
 
-    private func setupTerminalView(_ terminal: TerminalInstance) {
+    private func configureTerminalView(_ terminal: TerminalInstance, showHeader: Bool = false) {
         terminal.terminalView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.addSubview(terminal.terminalView)
 
-        NSLayoutConstraint.activate([
-            terminal.terminalView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            terminal.terminalView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
-            terminal.terminalView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            terminal.terminalView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-        ])
+        if showHeader {
+            // Create header view
+            let header = TerminalPaneHeaderView()
+            header.translatesAutoresizingMaskIntoConstraints = false
+            header.configure(terminal: terminal, number: 1)  // Number will be updated later
+            header.onClose = { [weak self] in
+                guard let self, let terminal = self.terminal else { return }
+                self.onCloseTerminal?(terminal.id)
+            }
+            self.headerView = header
+            containerView.addSubview(header)
+            containerView.addSubview(terminal.terminalView)
+
+            NSLayoutConstraint.activate([
+                header.topAnchor.constraint(equalTo: containerView.topAnchor),
+                header.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                header.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                header.heightAnchor.constraint(equalToConstant: 22),
+
+                terminal.terminalView.topAnchor.constraint(equalTo: header.bottomAnchor),
+                terminal.terminalView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                terminal.terminalView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                terminal.terminalView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            ])
+        } else {
+            containerView.addSubview(terminal.terminalView)
+
+            NSLayoutConstraint.activate([
+                terminal.terminalView.topAnchor.constraint(equalTo: containerView.topAnchor),
+                terminal.terminalView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor),
+                terminal.terminalView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
+                terminal.terminalView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            ])
+        }
     }
 
 
@@ -301,7 +512,9 @@ final class TerminalSplitNode {
         switch child.content {
         case .terminal(let terminal):
             self.content = .terminal(terminal)
-            setupTerminalView(terminal)
+            // When collapsing to a single terminal, check if we still need the header
+            let needsHeader = (parent != nil)  // If we have a parent, we're still in a split
+            configureTerminalView(terminal, showHeader: needsHeader)
 
         case .split(let splitView, let first, let second):
             first.parent = self
@@ -328,6 +541,9 @@ final class TerminalSplitContainerView: NSView {
 
     /// Callback when a drop occurs.
     var onDrop: ((UUID, TerminalDropZone, UUID?) -> Void)?
+
+    /// Callback when a terminal requests to be closed.
+    var onCloseTerminal: ((UUID) -> Void)?
 
     private var dropZoneOverlay: NSView?
 
@@ -363,8 +579,11 @@ final class TerminalSplitContainerView: NSView {
         // Remove existing root
         rootNode?.containerView.removeFromSuperview()
 
-        // Create new root node
-        let node = TerminalSplitNode(terminal: terminal)
+        // Create new root node (no header for single terminal)
+        let node = TerminalSplitNode(terminal: terminal, showHeader: false)
+        node.onCloseTerminal = { [weak self] id in
+            self?.onCloseTerminal?(id)
+        }
         rootNode = node
 
         addSubview(node.containerView)
@@ -375,6 +594,14 @@ final class TerminalSplitContainerView: NSView {
             node.containerView.trailingAnchor.constraint(equalTo: trailingAnchor),
             node.containerView.bottomAnchor.constraint(equalTo: bottomAnchor),
         ])
+    }
+
+
+    /// Updates the terminal numbers displayed in headers.
+    func updateTerminalNumbers() {
+        guard let rootNode else { return }
+        var number = 1
+        updateNumbers(in: rootNode, number: &number)
     }
 
 
@@ -417,12 +644,18 @@ final class TerminalSplitContainerView: NSView {
         }
 
         targetNode.split(with: terminal, direction: direction, newTerminalFirst: newTerminalFirst)
+
+        // Update terminal numbers after adding
+        updateTerminalNumbers()
     }
 
 
     /// Removes a terminal from the split layout.
     func removeTerminal(id: UUID) {
         rootNode?.remove(terminalID: id)
+
+        // Update terminal numbers after removing
+        updateTerminalNumbers()
     }
 
 
@@ -496,6 +729,19 @@ final class TerminalSplitContainerView: NSView {
 
 
     // MARK: Private Methods
+
+    /// Recursively updates terminal numbers in the split tree.
+    private func updateNumbers(in node: TerminalSplitNode, number: inout Int) {
+        switch node.content {
+        case .terminal:
+            node.updateHeaderNumber(number)
+            number += 1
+        case .split(_, let first, let second):
+            updateNumbers(in: first, number: &number)
+            updateNumbers(in: second, number: &number)
+        }
+    }
+
 
     private func updateDropZone(for sender: NSDraggingInfo) {
         let location = convert(sender.draggingLocation, from: nil)

@@ -416,6 +416,10 @@ final class TerminalPanelViewController: NSViewController {
             )
         }
 
+        container.onCloseTerminal = { [weak self] terminalID in
+            self?.closeTerminal(id: terminalID)
+        }
+
         return container
     }
 
