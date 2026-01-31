@@ -735,6 +735,19 @@ Gw
                                                             <action selector="closeTerminalTab:" target="Ady-hI-5gd" id="TRM-00-009"/>
                                                         </connections>
                                                     </menuItem>
+                                                    <menuItem isSeparatorItem="YES" id="TRM-00-010"/>
+                                                    <menuItem title="Split Terminal Right" secondaryImage="rectangle.split.1x2" catalog="system" keyEquivalent="D" id="TRM-00-011">
+                                                        <modifierMask key="keyEquivalentModifierMask" shift="YES" control="YES" command="YES"/>
+                                                        <connections>
+                                                            <action selector="splitTerminalHorizontally:" target="Ady-hI-5gd" id="TRM-00-012"/>
+                                                        </connections>
+                                                    </menuItem>
+                                                    <menuItem title="Split Terminal Down" secondaryImage="rectangle.split.2x1" catalog="system" keyEquivalent="D" id="TRM-00-013">
+                                                        <modifierMask key="keyEquivalentModifierMask" control="YES" command="YES"/>
+                                                        <connections>
+                                                            <action selector="splitTerminalVertically:" target="Ady-hI-5gd" id="TRM-00-014"/>
+                                                        </connections>
+                                                    </menuItem>
                                                 </items>
                                             </menu>
                                         </menuItem>

@@ -136,6 +136,18 @@ final class TerminalInstance: NSObject, Identifiable {
     }
 
 
+    /// Changes the terminal's working directory.
+    ///
+    /// - Parameter directory: The new working directory.
+    func changeDirectory(to directory: URL) {
+        self.workingDirectory = directory
+        self.updateTitle()
+        guard self.isRunning else { return }
+        let cdCommand = "cd \(Self.shellEscape(directory.path)) && clear\n"
+        self.terminalView.send(txt: cdCommand)
+    }
+
+
     /// Updates the terminal font.
     func updateFont() {
         let fontSize = UserDefaults.standard[.terminalFontSize]
@@ -166,6 +178,9 @@ final class TerminalInstance: NSObject, Identifiable {
         self.terminalView.processDelegate = self
         self.terminalView.translatesAutoresizingMaskIntoConstraints = false
 
+        // Ensure the terminal view uses a layer for proper rendering
+        self.terminalView.wantsLayer = true
+
         // Configure terminal options
         let scrollback = UserDefaults.standard[.terminalScrollbackLines]
         // Note: SwiftTerm handles scrollback internally
@@ -178,6 +193,10 @@ final class TerminalInstance: NSObject, Identifiable {
 
         // Apply cursor style
         self.updateCursorStyle()
+
+        // Set content hugging to allow the terminal to fill available space
+        self.terminalView.setContentHuggingPriority(.defaultLow, for: .vertical)
+        self.terminalView.setContentHuggingPriority(.defaultLow, for: .horizontal)
     }
 
 
